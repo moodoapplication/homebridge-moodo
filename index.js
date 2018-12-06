@@ -8,7 +8,7 @@ module.exports = function (homebridge) {
 };
 
 function HomebridgeMoodo(log, config) {
-  this.currentState = null;
+  this.box = null;
   this.log = log;
   this.token = config["token"];
   this.device_key = config["device_key"];
@@ -41,26 +41,26 @@ HomebridgeMoodo.prototype = {
   },
 
   getPowerState: function (next) {
-    return next(null, this.currentState);
+    var me = this;
+    me.makeHttpRequest('GET', 'boxes/'+me.device_key, {}, function (error, response) {
+      if (error) {
+        return next(error);
+      } else {
+        me.box = response;
+        return next(null, me.box.box_status);
+      }
+    });
   },
 
   setPowerState: function(powerOn, next) {
     var me = this;
-    this.authenticate(function (error) {
-      if (error) {
-        return next(error);
-      } else {
-
-        me.makeHttpRequest(powerOn ? 'POST' : 'DELETE', 'boxes/'+me.device_key, {}, function (error) {
-          if (error) {
-            return next(error);
-          } else {
-            me.currentState = !me.currentState;
-            return next();
-          }
-        });
-      }
-    });
+    me.makeHttpRequest(powerOn ? 'POST' : 'DELETE', 'boxes/'+me.device_key, {}, function (error) {
+    if (error) {
+      return next(error);
+    } else {
+      me.box.box_status = powerOn ? 1 : 0;
+      return next();
+    }
   },
 
   getServices: function () {
