@@ -1,0 +1,32 @@
+{
+  "name": "homebridge-moodo",
+  "version": "1.0.0",
+  "description": "Homebridge plugin for Moodo - Smart Fragrance Diffuser",
+  "main": "index.js",
+  "dependencies": {
+    "request": "^2.81.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/moodoapplication/homebridge-moodo.git"
+  },
+  "keywords": [
+    "homebrige",
+    "moodo",
+    "homebridge-plugin"
+  ],
+  "engines": {
+    "node": ">=0.12.0",
+    "homebridge": ">=0.2.0"
+  },
+  "author": "Vladislav Landa",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/moodoapplication/homebridge-moodo/issues"
+  },
+  "homepage": "https://github.com/moodoapplication/homebridge-moodo#readme"
+}
