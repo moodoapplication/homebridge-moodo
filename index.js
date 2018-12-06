@@ -8,7 +8,7 @@ module.exports = function (homebridge) {
 };
 
 function HomebridgeMoodo(log, config) {
-  this.box = null;
+  this.box = {};
   this.log = log;
   this.token = config["token"];
   this.device_key = config["device_key"];
@@ -17,21 +17,26 @@ function HomebridgeMoodo(log, config) {
 HomebridgeMoodo.prototype = {
 
   makeHttpRequest: function(requestMethod, requestType, postData, next) {
+    var me = this;
 
     postData.plugin = {
       name: "homebridge-moodo",
       version: process.env.npm_package_version
     }
 
-    var me = this;
     request({
-        url: 'https://rest.moodo.co/'+requestType,
-        body: postData,
+        uri: 'https://rest.moodo.co/api/'+requestType,
+        body: Buffer.from(JSON.stringify(postData)),
         method: requestMethod,
-        headers: {'Content-type': 'application/json'}
+        headers: {'Content-type': 'application/json', 'token': me.token}
       },
       function(error, response, body) {
-        if (200 != response.statusCode) {
+        if (typeof response === 'undefined') {
+          me.log(error);
+          me.log(response);
+          me.log(body);
+        }
+        else if (200 != response.statusCode) {
           me.log('STATUS: ' + response.statusCode);
           me.log('HEADERS: ' + JSON.stringify(response.headers));
           me.log('BODY: ' + body);
@@ -42,11 +47,11 @@ HomebridgeMoodo.prototype = {
 
   getPowerState: function (next) {
     var me = this;
-    me.makeHttpRequest('GET', 'boxes/'+me.device_key, {}, function (error, response) {
+    me.makeHttpRequest('GET', 'boxes/'+me.device_key, {}, function (error) {
       if (error) {
         return next(error);
       } else {
-        me.box = response;
+        me.box.box_status = 1;
         return next(null, me.box.box_status);
       }
     });
