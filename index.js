@@ -55,12 +55,13 @@ HomebridgeMoodo.prototype = {
   setPowerState: function(powerOn, next) {
     var me = this;
     me.makeHttpRequest(powerOn ? 'POST' : 'DELETE', 'boxes/'+me.device_key, {}, function (error) {
-    if (error) {
-      return next(error);
-    } else {
-      me.box.box_status = powerOn ? 1 : 0;
-      return next();
-    }
+      if (error) {
+        return next(error);
+      } else {
+        me.box.box_status = powerOn ? 1 : 0;
+        return next();
+      }
+    });
   },
 
   getServices: function () {
