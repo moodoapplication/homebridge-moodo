@@ -130,7 +130,7 @@ HomebridgeMoodo.prototype = {
       .setCharacteristic(Characteristic.Model, "Moodo");
 
     var moodoService = new Service.Fanv2();
-    moodoService.getCharacteristic(Characteristic.On)
+    moodoService.getCharacteristic(Characteristic.Active)
       .on('get', this.getPowerState.bind(this))
       .on('set', this.setPowerState.bind(this));
 
@@ -139,7 +139,8 @@ HomebridgeMoodo.prototype = {
       .on('set', this.setFanVolume.bind(this));
 
     if (moodoService) {
-      informationService.setCharacteristic(Characteristic.On, me.box.box_status === 1);
+      informationService
+          .setCharacteristic(Characteristic.Active, me.box.box_status);
     }
 
     this.informationService = informationService;
