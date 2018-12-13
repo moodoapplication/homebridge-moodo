@@ -7,11 +7,9 @@ Moodo is the only diffuser to enable mixing scents and personalizing them to you
 
 # About Plugin
 
-Currently, this plugin switches on and off your Moodo device(s).
+We are looking for contributors to help with development of this plugin, so any help would be very welcome!
 
 It uses [RESTful API](https://rest.moodo.co) available for free.
-
-We are looking for contributors to help with development of this plugin, so any help would be very welcome!
 
 # Installation
 
@@ -21,9 +19,9 @@ Install this plugin using: `npm install -g homebridge-moodo`
 
 # Configuration
 
-You can use this plugin with real Moodo device only (not demo mode), connected to the cloud
+You can use this plugin with real Moodo device only (not demo mode), connected to the cloud.
 
-Please login into https://homebridge.moodo.co with the same account to get the configuration instructions.
+Please login into https://homebridge.moodo.co with the same Moodo account you use in the mobile application to get the configuration instructions.
 
 Thanks in advance,
 Moodo Team
