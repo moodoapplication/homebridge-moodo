@@ -139,9 +139,7 @@ HomebridgeMoodo.prototype = {
       .on('set', this.setFanVolume.bind(this));
 
     if (moodoService) {
-      informationService
-          .setCharacteristic(Characteristic.On, me.box.box_status === 1)
-          .setCharacteristic(Characteristic.Active, me.box.is_online ? 1 : 0);
+      informationService.setCharacteristic(Characteristic.On, me.box.box_status === 1);
     }
 
     this.informationService = informationService;
