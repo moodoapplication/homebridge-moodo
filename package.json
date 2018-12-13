@@ -1,6 +1,6 @@
 {
   "name": "homebridge-moodo",
-  "version": "1.0.25-alpha",
+  "version": "1.1.0",
   "description": "Homebridge plugin for Moodo - Smart Fragrance Diffuser",
   "main": "index.js",
   "dependencies": {
