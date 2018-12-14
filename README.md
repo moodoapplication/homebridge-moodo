@@ -1,9 +1,10 @@
 # homebridge-moodo
 
-[Moodo](https://moodo.co/) plugin for Homebridge
+[Moodo](https://moodo.co) plugin for Homebridge
 
 # About Moodo
-Moodo is the only diffuser to enable mixing scents and personalizing them to your taste.
+
+[Moodo](https://moodo.co) is the only diffuser to enable mixing scents and personalizing them to your taste.
 
 # About Plugin
 
