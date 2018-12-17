@@ -70,16 +70,16 @@ function HomebridgeMoodo(log, config) {
       });
 
     socket.on('connect', function(){
-      console.log('Connected');
+      // console.log('Connected');
 
       setTimeout(function () {
         socket.emit('authenticate', config["token"], false);
-        console.log('Authenticated');
+        // console.log('Authenticated');
       }, 1000);
 
       setTimeout(function () {
           socket.emit('subscribe', 'homebridge');
-          console.log('Subscribed');
+          // console.log('Subscribed');
       }, 2500);
     });
 
