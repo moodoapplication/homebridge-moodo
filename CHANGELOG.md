@@ -6,7 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-## [1.1.6] - 2018-12-17
+## [1.2] - 2018-12-17
+### Changes
+- Removed console logs for socket.io and added homebridge registration
+- Release
+
+## [1.1.6] - 2018-12-16
 ### Changes
 - Created Socket.io feedback from service. Now you have always current state shown :D
 

@@ -78,7 +78,7 @@ function HomebridgeMoodo(log, config) {
       }, 1000);
 
       setTimeout(function () {
-          socket.emit('subscribe', 'all');
+          socket.emit('subscribe', 'homebridge');
           console.log('Subscribed');
       }, 2500);
     });
