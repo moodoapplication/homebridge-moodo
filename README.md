@@ -1,6 +1,6 @@
 # homebridge-moodo
 
-[Moodo](https://moodo.co) plugin for Homebridge
+Moodo plugin for [Homebridge](https://github.com/nfarina/homebridge).
 
 # About Moodo
 
@@ -10,7 +10,7 @@
 
 We are looking for contributors to help with development of this plugin, so any help would be very welcome!
 
-It uses [RESTful API](https://rest.moodo.co) available for free.
+It uses [RESTful API](https://rest.moodo.co) bundled with Socket.io service.
 
 # Installation
 

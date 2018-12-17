@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+## [1.1.6] - 2018-12-17
+### Changes
+- Created Socket.io feedback from service. Now you have always current state shown :D
+
 ## [1.1.5] - 2018-12-14
 ### Added
 - CHANGELOG.md
