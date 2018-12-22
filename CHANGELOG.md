@@ -6,10 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+## [1.2.2] - 2018-12-22
+### Changes
+- Removed console error logs
+
 ## [1.2] - 2018-12-17
 ### Changes
 - Removed console logs for socket.io and added homebridge registration
-- Release
 
 ## [1.1.6] - 2018-12-16
 ### Changes
