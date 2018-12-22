@@ -66,7 +66,7 @@ function HomebridgeMoodo(log, config) {
           }
       })
       .catch(function (err) {
-       console.error(err);
+       //console.error(err);
       });
 
     socket.on('connect', function(){
@@ -84,7 +84,7 @@ function HomebridgeMoodo(log, config) {
     });
 
     socket.on('disconnect', function(){
-      console.log('Disconnected');
+      // console.log('Disconnected');
     });
   }
 
@@ -133,7 +133,7 @@ HomebridgeMoodo.prototype = {
         return next();
       })
       .catch(function (err) {
-        console.error(err);
+        //console.error(err);
         return next(err);
       });
   },
@@ -158,7 +158,7 @@ HomebridgeMoodo.prototype = {
         return next();
       })
       .catch(function (err) {
-        console.error(err);
+        //console.error(err);
         return next(err);
       });
   },
