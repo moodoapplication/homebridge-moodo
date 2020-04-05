@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+## [2.0.0] - 2020-04-05
+### Changes
+- Rewrite of the plugin
+- Added option to expose capsules to HomeKit
+
 ## [1.2.2] - 2018-12-22
 ### Changes
 - Removed console error logs
