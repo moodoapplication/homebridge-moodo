@@ -23,4 +23,14 @@ export interface DeviceConfiguration {
      * Gets or sets a value that determines whether controls for the individual capsules are exposed to HomeKit.
      */
     showCapsules: boolean;
+
+    /**
+     * Gets or sets a value that determines whether the names of the capsule services should be those of the fragrences.
+     */
+    useCapsuleNames: boolean;
+
+    /**
+     * Gets or sets a value that determines whether controls for the individual capsules are added to the main accessory.
+     */
+    isSingleAccessoryModeEnabled: boolean;
 }

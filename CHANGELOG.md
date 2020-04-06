@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+## [2.0.1] - 2020-04-06
+### Changes
+- Added option to expose a single accessory for main device and capsules
+- Enhanced off state for capsules
+- Added option to automatically rename capsules
+
 ## [2.0.0] - 2020-04-05
 ### Changes
 - Rewrite of the plugin

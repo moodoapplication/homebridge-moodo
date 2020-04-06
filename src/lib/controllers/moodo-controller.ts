@@ -1,7 +1,7 @@
 
 import { Platform } from '../platform';
 import { DeviceConfiguration } from '../configuration/device-configuration';
-import { Homebridge, Characteristic, Service } from 'homebridge-framework';
+import { Homebridge, Characteristic, Service, Accessory } from 'homebridge-framework';
 import { Formats, Perms } from 'hap-nodejs';
 import { Box } from '../clients/models/box';
 import { BoxStatus } from '../clients/models/box-status';
@@ -84,10 +84,12 @@ export class MoodoController {
         this.mainRotationSpeedCharacteristic.valueChanged = newValue => {
             platform.logger.info(`[${deviceConfiguration.id}] Change device intensity to ${newValue}`);
             try {
-                if (newValue == 0) {
-                    platform.apiClient.powerOffAsync(deviceConfiguration.id);
-                } else {
-                    platform.apiClient.setIntensityAsync(deviceConfiguration.id, newValue);
+                if (this.mainRotationSpeedCharacteristic.value !== newValue) {
+                    if (newValue == 0) {
+                        platform.apiClient.powerOffAsync(deviceConfiguration.id);
+                    } else {
+                        platform.apiClient.setIntensityAsync(deviceConfiguration.id, newValue);
+                    }
                 }
             } catch (e) {
                 platform.logger.warn(`[${deviceConfiguration.id}] failed to change device intensity to ${newValue}`);
@@ -96,22 +98,34 @@ export class MoodoController {
 
         // Creates the accessory for the capsules
         if (deviceConfiguration.showCapsules) {
-            const slotsAccessory = platform.useAccessory(`${deviceConfiguration.name} Capsules`, deviceConfiguration.id.toString(), 'slots');
-            slotsAccessory.setInformation({
-                manufacturer: 'Agan Aroma & Fine Chemicals Ltd.',
-                model: 'Moodo',
-                serialNumber: deviceConfiguration.id.toString(),
-                firmwareRevision: null,
-                hardwareRevision: null
-            });
+
+            // Adds a new accessory if the single accessory mode is disabled
+            let slotsAccessory: Accessory;
+            if (deviceConfiguration.isSingleAccessoryModeEnabled) {
+                slotsAccessory = mainAccessory;
+            } else {
+                slotsAccessory = platform.useAccessory(`${deviceConfiguration.name} Capsules`, deviceConfiguration.id.toString(), 'slots');
+                slotsAccessory.setInformation({
+                    manufacturer: 'Agan Aroma & Fine Chemicals Ltd.',
+                    model: 'Moodo',
+                    serialNumber: deviceConfiguration.id.toString(),
+                    firmwareRevision: null,
+                    hardwareRevision: null
+                });
+            }
 
             // Initializes the characteristics
+            this.slotRotationSpeedValues = new Array<number>();
             this.slotActiveCharacteristics = new Array<Characteristic<boolean>>();
             if (deviceConfiguration.type === 'purifier') {
                 this.slotCurrentStateCharacteristics = new Array<Characteristic<number>>();
             }
             this.slotRotationSpeedCharacteristics = new Array<Characteristic<number>>();
+            if (deviceConfiguration.useCapsuleNames) {
+                this.slotConfiguredNameCharacteristics = new Array<Characteristic<string>>();
+            }
             for (let i = 0; i < 4; i++) {
+                this.slotRotationSpeedValues.push(0);
 
                 // Creates the main service for the device
                 platform.logger.info(`[${deviceConfiguration.id}] Adding capsule ${(i + 1)}`);
@@ -123,12 +137,25 @@ export class MoodoController {
                 }
                 slotService.useCharacteristic<number>(Homebridge.Characteristics.ServiceLabelIndex, i + 1);
 
+                // Sets the capsule name
+                if (deviceConfiguration.useCapsuleNames) {
+                    this.slotConfiguredNameCharacteristics!.push(slotService.useCharacteristic<string>(Homebridge.Characteristics.ConfiguredName));
+                }
+
                 // Adds the characteristics for the service
                 const slotActiveCharacteristic = slotService.useCharacteristic<boolean>(Homebridge.Characteristics.Active);
                 slotActiveCharacteristic.valueChanged = newValue => {
                     platform.logger.info(`[${deviceConfiguration.id}] Change capsule ${(i + 1)} status to ${newValue}`);
                     try {
-                        platform.apiClient.updateAsync(this.getBoxUpdateForActive(i, newValue ? true : false));
+                        
+                        // If the main device is active, the value can be set, otherwise, it has to be reset to false
+                        if (this.mainActiveCharacteristic.value) {
+                            if (slotActiveCharacteristic.value !== newValue) {
+                                platform.apiClient.updateAsync(this.getBoxUpdate(i, newValue ? (this.slotRotationSpeedCharacteristics![i].value || 0) : 0));
+                            }
+                        } else if (newValue) {
+                            setTimeout(() => slotActiveCharacteristic.value = false, 1000);
+                        }
                     } catch (e) {
                         platform.logger.warn(`[${deviceConfiguration.id}] failed to change capsule ${(i + 1)} status to ${newValue}`);
                     }
@@ -163,10 +190,14 @@ export class MoodoController {
                 slotRotationSpeedCharacteristic.valueChanged = newValue => {
                     platform.logger.info(`[${deviceConfiguration.id}] Change capsule ${(i + 1)} intensity to ${newValue}`);
                     try {
-                        if (newValue == 0) {
-                            platform.apiClient.updateAsync(this.getBoxUpdateForActive(i, false));
-                        } else {
-                            platform.apiClient.updateAsync(this.getBoxUpdateForSpeed(i, newValue));
+
+                        // If the main device is active, the value can be set
+                        if (this.mainActiveCharacteristic.value) {
+                            if (slotRotationSpeedCharacteristic.value !== newValue) {
+                                platform.apiClient.updateAsync(this.getBoxUpdate(i, newValue));
+                            }
+                        } else if (newValue > 0) {
+                            setTimeout(() => slotRotationSpeedCharacteristic.value = 0, 1000);
                         }
                     } catch (e) {
                         platform.logger.warn(`[${deviceConfiguration.id}] failed to change capsule ${(i + 1)} intensity to ${newValue}`);
@@ -193,17 +224,27 @@ export class MoodoController {
     private mainRotationSpeedCharacteristic: Characteristic<number>;
 
     /**
-     * Contains the active characteristic of the device.
+     * Contains the configured name characteristics of each slot.
+     */
+    private slotConfiguredNameCharacteristics: Array<Characteristic<string>>|null = null;
+
+    /**
+     * Contains the rotation speed values of the device, which are the real states (independent of the state of the main device).
+     */
+    private slotRotationSpeedValues: Array<number>|null = null;
+
+    /**
+     * Contains the active characteristic of the device. Those may be all of value false if the main device is off.
      */
     private slotActiveCharacteristics: Array<Characteristic<boolean>>|null = null;
 
     /**
-     * Contains the current state characteristic of the device.
+     * Contains the current state characteristic of the device. Those may be all of value false if the main device is off.
      */
     private slotCurrentStateCharacteristics: Array<Characteristic<number>>|null = null;
 
     /**
-     * Contains the rotation speed characteristic of the device.
+     * Contains the rotation speed characteristic of the device. The values may be all 0 if the main device if off.
      */
     private slotRotationSpeedCharacteristics: Array<Characteristic<number>>|null = null;
 
@@ -215,58 +256,28 @@ export class MoodoController {
     /**
      * Creates a new BoxUpdate model from the current state of the device and updates a single slot.
      * @param slotId The number of the slot.
-     * @param active Determines whether the slot should be set to active.
-     * @returns Returns a BoxUpdate model that can be sent to the API.
-     */
-    private getBoxUpdateForActive(slotId: number, active: boolean): BoxUpdate {
-        return {
-            device_key: this.deviceConfiguration.id,
-            box_status: this.mainActiveCharacteristic.value ? BoxStatus.On : BoxStatus.Off,
-            fan_volume: this.mainRotationSpeedCharacteristic.value || 0,
-            settings_slot0: {
-                fan_active: slotId == 0 ? active : (this.slotActiveCharacteristics![0].value ? true : false),
-                fan_speed: this.slotRotationSpeedCharacteristics![0].value || 0
-            },
-            settings_slot1: {
-                fan_active: slotId == 1 ? active : (this.slotActiveCharacteristics![1].value ? true : false),
-                fan_speed: this.slotRotationSpeedCharacteristics![1].value || 0
-            },
-            settings_slot2: {
-                fan_active: slotId == 2 ? active : (this.slotActiveCharacteristics![2].value ? true : false),
-                fan_speed: this.slotRotationSpeedCharacteristics![2].value || 0
-            },
-            settings_slot3: {
-                fan_active: slotId == 3 ? active : (this.slotActiveCharacteristics![3].value ? true : false),
-                fan_speed: this.slotRotationSpeedCharacteristics![3].value || 0
-            }
-        };
-    }
-
-    /**
-     * Creates a new BoxUpdate model from the current state of the device and updates a single slot.
-     * @param slotId The number of the slot.
      * @param speed The new speed.
      * @returns Returns a BoxUpdate model that can be sent to the API.
      */
-    private getBoxUpdateForSpeed(slotId: number, speed: number): BoxUpdate {
+    private getBoxUpdate(slotId: number, speed: number): BoxUpdate {
         return {
             device_key: this.deviceConfiguration.id,
             box_status: this.mainActiveCharacteristic.value ? BoxStatus.On : BoxStatus.Off,
             fan_volume: this.mainRotationSpeedCharacteristic.value || 0,
             settings_slot0: {
-                fan_active: (this.slotActiveCharacteristics![0].value ? true : false),
+                fan_active: slotId == 0 ? (speed > 0 ? true : false) : (this.slotRotationSpeedValues![0] > 0 ? true : false),
                 fan_speed: slotId == 0 ? speed : this.slotRotationSpeedCharacteristics![0].value || 0
             },
             settings_slot1: {
-                fan_active: (this.slotActiveCharacteristics![1].value ? true : false),
+                fan_active: slotId == 1 ? (speed > 0 ? true : false) : (this.slotRotationSpeedValues![1] > 0 ? true : false),
                 fan_speed: slotId == 1 ? speed : this.slotRotationSpeedCharacteristics![1].value || 0
             },
             settings_slot2: {
-                fan_active: (this.slotActiveCharacteristics![2].value ? true : false),
+                fan_active: slotId == 2 ? (speed > 0 ? true : false) : (this.slotRotationSpeedValues![2] > 0 ? true : false),
                 fan_speed: slotId == 2 ? speed : this.slotRotationSpeedCharacteristics![2].value || 0
             },
             settings_slot3: {
-                fan_active: (this.slotActiveCharacteristics![3].value ? true : false),
+                fan_active: slotId == 3 ? (speed > 0 ? true : false) : (this.slotRotationSpeedValues![3] > 0 ? true : false),
                 fan_speed: slotId == 3 ? speed : this.slotRotationSpeedCharacteristics![3].value || 0
             }
         };
@@ -291,16 +302,22 @@ export class MoodoController {
         for (let slot of box.settings) {
 
             // Updates the characteristics
+            if (this.slotConfiguredNameCharacteristics) {
+                this.slotConfiguredNameCharacteristics[slot.slot_id].value = slot.capsule_info ? slot.capsule_info.title : null;
+            }
+            if (this.slotRotationSpeedValues) {
+                this.slotRotationSpeedValues[slot.slot_id] = slot.fan_speed;
+            }
             if (this.slotActiveCharacteristics) {
-                this.slotActiveCharacteristics[slot.slot_id].value = slot.fan_active;
+                this.slotActiveCharacteristics[slot.slot_id].value = this.mainActiveCharacteristic.value ? slot.fan_active : false;
             }
             if (this.slotRotationSpeedCharacteristics) {
-                this.slotRotationSpeedCharacteristics[slot.slot_id].value = slot.fan_speed;
+                this.slotRotationSpeedCharacteristics[slot.slot_id].value = this.mainActiveCharacteristic.value ? slot.fan_speed : 0;
             }
 
             // Updates the air purifier characteristics
             if (this.slotCurrentStateCharacteristics) {
-                this.slotCurrentStateCharacteristics[slot.slot_id].value = slot.fan_active ? 2 : 0;
+                this.slotCurrentStateCharacteristics[slot.slot_id].value = this.mainActiveCharacteristic.value ? (slot.fan_active ? 2 : 0) : 0;
             }
         }
     }

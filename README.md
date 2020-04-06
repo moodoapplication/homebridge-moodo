@@ -33,7 +33,9 @@ npm install -g homebridge-moodo@next
                     "id": <DEVICE-ID>,
                     "name": "<DEVICE-NAME>",
                     "type": "fan",
-                    "showCapsules": false
+                    "showCapsules": false,
+                    "useCapsuleNames": false,
+                    "isSingleAccessoryModeEnabled": false
                 }
             ]
         }
@@ -52,3 +54,8 @@ npm install -g homebridge-moodo@next
 **type** (optional): Determines the type of the HomeKit device that is to be exposed. Possible values are `purifier` or `fan`. Defaults to `fan`.
 
 **showCapsules** (optional): Determines whether controls for the individual capsules are exposed to HomeKit. Defaults to `false`.
+
+**useCapsuleNames** (optional): By default, the capsules are named "Capsule 1" to "Capsule 4". If this value is set to `true`, the actual capsule names (i.e. the fragrence names) are shown. (Only used if `showCapsules` is `true`)
+
+**isSingleAccessoryModeEnabled** (optional): By default, the capsules are placed in a separate accessory (works best in the Apple Home app). If this value is set to `true`, those controls are added to the main accessory instead of a separate accessory. (Only used if `showCapsules` is `true`)
+
