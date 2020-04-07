@@ -151,7 +151,7 @@ export class MoodoController {
                         // If the main device is active, the value can be set, otherwise, it has to be reset to false
                         if (this.mainActiveCharacteristic.value) {
                             if (slotActiveCharacteristic.value !== newValue) {
-                                platform.apiClient.updateAsync(this.getBoxUpdate(i, newValue ? (this.slotRotationSpeedCharacteristics![i].value || 0) : 0));
+                                platform.apiClient.updateAsync(this.getBoxUpdate(i, newValue ? (this.slotRotationSpeedCharacteristics![i].value || 100) : 0));
                             }
                         } else if (newValue) {
                             setTimeout(() => slotActiveCharacteristic.value = false, 1000);

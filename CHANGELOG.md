@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+## [2.0.2] - 2020-04-07
+### Changes
+- Enhanced the on switch for capsules
+- Added config.schema.json
+
 ## [2.0.1] - 2020-04-06
 ### Changes
 - Added option to expose a single accessory for main device and capsules
