@@ -1,5 +1,7 @@
 # homebridge-moodo
 
+**IMPORTANT: If you update this plugin from v1 to v2, you have to change the configuration as described below.**
+
 Moodo plugin for [Homebridge](https://github.com/nfarina/homebridge). Moodo](https://moodo.co) is the only diffuser to enable mixing scents and personalizing them to your taste.
 This plugin can be used to expose your Moodo devices to Homebridge with support for
 * On/off
