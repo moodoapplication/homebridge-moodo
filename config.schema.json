@@ -1,0 +1,55 @@
+{
+    "pluginAlias": "MoodoPlatform",
+    "pluginType": "platform",
+    "headerDisplay": "Moodo plugin for Homebridge. Visit https://homebridge.moodo.co to retrieve the token and device IDs.",
+    "footerDisplay": "For help please visit the [GitHub repository](https://github.com/moodoapplication/homebridge-moodo).",
+    "schema": {
+        "type": "object",
+        "properties": {
+            "token": {
+                "type": "string",
+                "title": "Moodo Token"
+            },
+            "devices": {
+                "type": "array",
+                "title": "Devices",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer",
+                            "title": "ID",
+                            "placeholder": "Device ID"
+                        },
+                        "name": {
+                            "type": "string",
+                            "title": "Name",
+                            "placeholder": "Choose a name"
+                        },
+                        "type": {
+                            "type": "integer",
+                            "title": "HomeKit Type",
+                            "default": "fan",
+                            "oneOf": [
+                                { "title": "Fan", "enum": ["fan"] },
+                                { "title": "Air Purifier", "enum": ["purifier"] }
+                            ]
+                        },
+                        "showCapsules": {
+                            "type": "boolean",
+                            "title": "Show Capsules"
+                        },
+                        "useCapsuleNames": {
+                            "type": "boolean",
+                            "title": "Capsules Names in HomeKit"
+                        },
+                        "isSingleAccessoryModeEnabled": {
+                            "type": "boolean",
+                            "title": "Single Accessory Mode"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

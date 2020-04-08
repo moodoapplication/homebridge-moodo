@@ -1,28 +1,63 @@
 # homebridge-moodo
 
-Moodo plugin for [Homebridge](https://github.com/nfarina/homebridge).
+**IMPORTANT: If you update this plugin from v1 to v2, you have to change the configuration as described below.**
 
-# About Moodo
+Moodo plugin for [Homebridge](https://github.com/nfarina/homebridge). Moodo](https://moodo.co) is the only diffuser to enable mixing scents and personalizing them to your taste.
+This plugin can be used to expose your Moodo devices to Homebridge with support for
+* On/off
+* Main intensity
+* Intensity of individual capsules
 
-[Moodo](https://moodo.co) is the only diffuser to enable mixing scents and personalizing them to your taste.
+## Get your Token
 
-# About Plugin
+In order to authenticate against the Moodo server, you have to create a token for your Moodo account. Therefore, visit https://homebridge.moodo.co and sign in with the Moodo account you want to use with the plugin. You will receive
+* The token
+* A list of device IDs that you can use with this plugin
 
-We are looking for contributors to help with development of this plugin, so any help would be very welcome!
+## Installation
 
-It uses [RESTful API](https://rest.moodo.co) bundled with Socket.io service.
+Please install the plugin with the following command:
 
-# Installation
+```
+npm install -g homebridge-moodo
+```
 
-Install homebridge using: `npm install -g homebridge`
+## Configuration
 
-Install this plugin using: `npm install -g homebridge-moodo`
+```json
+{
+    "platforms": [
+        {
+            "platform": "MoodoPlatform",
+            "token": "<YOUR-TOKEN>",
+            "devices": [
+                {
+                    "id": <DEVICE-ID>,
+                    "name": "<DEVICE-NAME>",
+                    "type": "fan",
+                    "showCapsules": false,
+                    "useCapsuleNames": false,
+                    "isSingleAccessoryModeEnabled": false
+                }
+            ]
+        }
+    ]
+}
+```
 
-# Configuration
+**token**: Your account token that you received in step **Get your Token**.
 
-You can use this plugin with real Moodo device only (not demo mode), connected to the cloud.
+**devices**: Array of all your Moodo devices that the plugin should expose to HomeKit.
 
-Please login into https://homebridge.moodo.co with the same Moodo account you use in the mobile application to get the configuration instructions.
+**id**: The device ID that you received in step **Get your Token**. This is a number.
 
-Thanks in advance,
-Moodo Team
+**name**: The name that should be used in HomeKit for this device.
+
+**type** (optional): Determines the type of the HomeKit device that is to be exposed. Possible values are `purifier` or `fan`. Defaults to `fan`.
+
+**showCapsules** (optional): Determines whether controls for the individual capsules are exposed to HomeKit. Defaults to `false`.
+
+**useCapsuleNames** (optional): By default, the capsules are named "Capsule 1" to "Capsule 4". If this value is set to `true`, the actual capsule names (i.e. the fragrence names) are shown. (Only used if `showCapsules` is `true`)
+
+**isSingleAccessoryModeEnabled** (optional): By default, the capsules are placed in a separate accessory (works best in the Apple Home app). If this value is set to `true`, those controls are added to the main accessory instead of a separate accessory. (Only used if `showCapsules` is `true`)
+
