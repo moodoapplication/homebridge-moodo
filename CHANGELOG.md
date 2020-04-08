@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+## [2.0.3] - 2020-04-08
+### Changes
+- Published the new plugin version
+
 ## [2.0.2] - 2020-04-07
 ### Changes
 - Enhanced the on switch for capsules
