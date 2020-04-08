@@ -19,7 +19,7 @@ In order to authenticate against the Moodo server, you have to create a token fo
 Please install the plugin with the following command:
 
 ```
-npm install -g homebridge-moodo@next
+npm install -g homebridge-moodo
 ```
 
 ## Configuration
