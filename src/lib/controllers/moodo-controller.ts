@@ -2,7 +2,6 @@
 import { Platform } from '../platform';
 import { DeviceConfiguration } from '../configuration/device-configuration';
 import { Homebridge, Characteristic, Service, Accessory } from 'homebridge-framework';
-import { Formats, Perms } from 'hap-nodejs';
 import { Box } from '../clients/models/box';
 import { BoxStatus } from '../clients/models/box-status';
 import { BoxUpdate } from '../clients/models/box-update';
@@ -62,20 +61,16 @@ export class MoodoController {
             
             // Adds the current state, which may be off or on
             this.mainCurrentStateCharacteristic = mainService.useCharacteristic<number>(Homebridge.Characteristics.CurrentAirPurifierState);
-            this.mainCurrentStateCharacteristic.setProperties({
-                format: Formats.UINT8,
-                validValues: [0, 2],
-                perms: [Perms.READ, Perms.NOTIFY]
+            this.mainCurrentStateCharacteristic.setProperties(<any>{
+                validValues: [0, 2]
             });
 
             // Adds the target state, which are always set to manual
             const mainTargetStateCharacteristic = mainService.useCharacteristic<number>(Homebridge.Characteristics.TargetAirPurifierState);
-            mainTargetStateCharacteristic.setProperties({
-                format: Formats.UINT8,
+            mainTargetStateCharacteristic.setProperties(<any>{
                 minValue: 0,
                 maxValue: 0,
-                validValues: [0],
-                perms: [Perms.READ, Perms.WRITE, Perms.NOTIFY]
+                validValues: [0]
             });
         }
 
@@ -167,21 +162,17 @@ export class MoodoController {
                     
                     // Adds the current state, which may be off or on
                     const slotCurrentStateCharacteristic = slotService.useCharacteristic<number>(Homebridge.Characteristics.CurrentAirPurifierState);
-                    slotCurrentStateCharacteristic.setProperties({
-                        format: Formats.UINT8,
-                        validValues: [0, 2],
-                        perms: [Perms.READ, Perms.NOTIFY]
+                    slotCurrentStateCharacteristic.setProperties(<any>{
+                        validValues: [0, 2]
                     });
                     this.slotCurrentStateCharacteristics!.push(slotCurrentStateCharacteristic);
 
                     // Adds the target state, which are always set to manual
                     const slotTargetStateCharacteristic = slotService.useCharacteristic<number>(Homebridge.Characteristics.TargetAirPurifierState);
-                    slotTargetStateCharacteristic.setProperties({
-                        format: Formats.UINT8,
+                    slotTargetStateCharacteristic.setProperties(<any>{
                         minValue: 0,
                         maxValue: 0,
-                        validValues: [0],
-                        perms: [Perms.READ, Perms.WRITE, Perms.NOTIFY]
+                        validValues: [0]
                     });
                 }
 
