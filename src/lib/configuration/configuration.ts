@@ -35,4 +35,9 @@ export interface Configuration {
      * Gets or sets the devices that should be exposed to HomeKit.
      */
     devices: Array<DeviceConfiguration>;
+
+    /**
+     * Gets or sets a unique ID that is used to sort out updates from the socket that have been initiated by the plugin.
+     */
+    restfulRequestId: string;
 }

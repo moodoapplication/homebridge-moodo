@@ -16,7 +16,7 @@ export class MoodoController {
      * @param platform The plugin platform.
      * @param deviceConfiguration The configuration of the Moodo device that is represented by this controller.
      */
-    constructor(platform: Platform, private deviceConfiguration: DeviceConfiguration) {
+    constructor(private platform: Platform, private deviceConfiguration: DeviceConfiguration) {
         platform.logger.info(`[${deviceConfiguration.id}] Initializing...`);
 
         // Sets the ID
@@ -46,10 +46,39 @@ export class MoodoController {
         this.mainActiveCharacteristic.valueChanged = newValue => {
             platform.logger.info(`[${deviceConfiguration.id}] Change device status to ${newValue}`);
             try {
+
+                // Checks if the value actually changes
+                if (newValue === this.mainActiveCharacteristic.value) {
+                    return;
+                }
+
+                // Sends the update to the device
                 if (newValue) {
                     platform.apiClient.powerOnAsync(deviceConfiguration.id);
                 } else {
                     platform.apiClient.powerOffAsync(deviceConfiguration.id);
+                }
+
+                // Updates the current state characteristic
+                if (this.mainCurrentStateCharacteristic) {
+                    this.mainCurrentStateCharacteristic.value = newValue ? 2 : 0;
+                }
+
+                // Updates the slots
+                if (deviceConfiguration.showCapsules) {
+                    for (let i = 0; i < 4; i++) {
+                        if (this.slotActiveCharacteristics && this.slotRotationSpeedValues) {
+                            this.slotActiveCharacteristics[i].value = newValue ? this.slotRotationSpeedValues[i] > 0 : false;
+                        }
+                        if (this.slotRotationSpeedCharacteristics && this.slotRotationSpeedValues) {
+                            this.slotRotationSpeedCharacteristics[i].value = newValue ? this.slotRotationSpeedValues[i] : 0;
+                        }
+            
+                        // Updates the air purifier characteristics
+                        if (this.slotCurrentStateCharacteristics && this.slotRotationSpeedValues) {
+                            this.slotCurrentStateCharacteristics[i].value = newValue ? (this.slotRotationSpeedValues[i] > 0 ? 2 : 0) : 0;
+                        }
+                    }
                 }
             } catch (e) {
                 platform.logger.warn(`[${deviceConfiguration.id}] failed to change device status to ${newValue}`);
@@ -79,12 +108,17 @@ export class MoodoController {
         this.mainRotationSpeedCharacteristic.valueChanged = newValue => {
             platform.logger.info(`[${deviceConfiguration.id}] Change device intensity to ${newValue}`);
             try {
-                if (this.mainRotationSpeedCharacteristic.value !== newValue) {
-                    if (newValue == 0) {
-                        platform.apiClient.powerOffAsync(deviceConfiguration.id);
-                    } else {
-                        platform.apiClient.setIntensityAsync(deviceConfiguration.id, newValue);
-                    }
+
+                // Checks if the value actually changes
+                if (this.mainRotationSpeedCharacteristic.value === newValue) {
+                    return;
+                }
+
+                // Sends the update to the device
+                if (newValue == 0) {
+                    platform.apiClient.powerOffAsync(deviceConfiguration.id);
+                } else {
+                    platform.apiClient.setIntensityAsync(deviceConfiguration.id, newValue);
                 }
             } catch (e) {
                 platform.logger.warn(`[${deviceConfiguration.id}] failed to change device intensity to ${newValue}`);
@@ -145,9 +179,14 @@ export class MoodoController {
                         
                         // If the main device is active, the value can be set, otherwise, it has to be reset to false
                         if (this.mainActiveCharacteristic.value) {
-                            if (slotActiveCharacteristic.value !== newValue) {
-                                platform.apiClient.updateAsync(this.getBoxUpdate(i, newValue ? (this.slotRotationSpeedCharacteristics![i].value || 100) : 0));
+
+                            // Checks if the value actually changes
+                            if (slotActiveCharacteristic.value === newValue) {
+                                return;
                             }
+            
+                            // Sends the update to the device
+                            platform.apiClient.updateAsync(this.getBoxUpdate(i, newValue ? (this.slotRotationSpeedCharacteristics![i].value || 100) : 0));
                         } else if (newValue) {
                             setTimeout(() => slotActiveCharacteristic.value = false, 1000);
                         }
@@ -184,9 +223,15 @@ export class MoodoController {
 
                         // If the main device is active, the value can be set
                         if (this.mainActiveCharacteristic.value) {
-                            if (slotRotationSpeedCharacteristic.value !== newValue) {
-                                platform.apiClient.updateAsync(this.getBoxUpdate(i, newValue));
+                            
+                            // Checks if the value actually changes
+                            if (slotRotationSpeedCharacteristic.value === newValue) {
+                                return;
                             }
+            
+                            // Sends the update to the device
+                            platform.apiClient.updateAsync(this.getBoxUpdate(i, newValue));
+                            slotActiveCharacteristic.value = newValue > 0;
                         } else if (newValue > 0) {
                             setTimeout(() => slotRotationSpeedCharacteristic.value = 0, 1000);
                         }
@@ -270,7 +315,8 @@ export class MoodoController {
             settings_slot3: {
                 fan_active: slotId == 3 ? (speed > 0 ? true : false) : (this.slotRotationSpeedValues![3] > 0 ? true : false),
                 fan_speed: slotId == 3 ? speed : this.slotRotationSpeedCharacteristics![3].value || 0
-            }
+            },
+            restful_request_id: this.platform.configuration.restfulRequestId
         };
     }
 

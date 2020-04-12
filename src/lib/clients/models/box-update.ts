@@ -41,4 +41,9 @@ export interface BoxUpdate {
      * Gets or sets a slot update of the box.
      */
     settings_slot3: SlotUpdate;
+
+    /**
+     * Gets or sets a unique ID that is used to sort out updates from the socket that have been initiated by the plugin.
+     */
+    restful_request_id: string;
 }

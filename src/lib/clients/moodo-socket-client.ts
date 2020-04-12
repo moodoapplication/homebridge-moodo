@@ -49,8 +49,14 @@ export class MoodoSocketClient extends EventEmitter {
         });
 
         // Subscribes to changes
-        this.socket.on('ws_event', (eventData: { data: Box }) => {
+        this.socket.on('ws_event', (eventData: { data: Box, restful_request_id: string }) => {
             if (!eventData || !eventData.data) {
+                return;
+            }
+
+            // Checks if the update has been initiated by the plugin, in this case, nothing has to be updated
+            if (eventData.restful_request_id && eventData.restful_request_id === this.platform.configuration.restfulRequestId) {
+                this.platform.logger.debug('Socket.io update received from plugin.');
                 return;
             }
 

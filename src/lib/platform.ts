@@ -105,6 +105,7 @@ export class Platform extends HomebridgePlatform<Configuration> {
         this.configuration.maximumApiRetry = 3;
         this.configuration.apiRetryInterval = 2000;
         this.configuration.socketIoUri = 'https://ws.moodo.co:9090';
+        this.configuration.restfulRequestId = this.platformName;
 
         // Initializes the clients
         this._apiClient = new MoodoApiClient(this);

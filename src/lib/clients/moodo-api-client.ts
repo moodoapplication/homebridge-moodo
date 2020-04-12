@@ -136,7 +136,8 @@ export class MoodoApiClient {
         // Sends the HTTP request to set the box status
         try {
             await axios.post(`${this.platform.configuration.apiUri}/intensity/${deviceKey}`, {
-                fan_volume: intensity
+                fan_volume: intensity,
+                restful_request_id: this.platform.configuration.restfulRequestId
             }, { 
                 headers: {
                     token: this.platform.configuration.token
@@ -167,6 +168,9 @@ export class MoodoApiClient {
         if (!retryCount) {
             retryCount = this.platform.configuration.maximumApiRetry;
         }
+
+        // Sets the request ID
+        boxUpdate.restful_request_id = this.platform.configuration.restfulRequestId;
 
         // Sends the HTTP request to set the box status
         try {
