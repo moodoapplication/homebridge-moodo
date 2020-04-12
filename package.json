@@ -1,6 +1,6 @@
 {
   "name": "homebridge-moodo",
-  "version": "2.1.0",
+  "version": "2.1.2",
   "author": "Vladislav Landa",
   "homepage": "https://github.com/moodoapplication/homebridge-moodo#readme",
   "description": "Homebridge plugin for Moodo - Smart Fragrance Diffuser",

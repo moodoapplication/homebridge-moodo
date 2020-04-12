@@ -54,9 +54,9 @@ export class MoodoController {
 
                 // Sends the update to the device
                 if (newValue) {
-                    platform.apiClient.powerOnAsync(deviceConfiguration.id);
+                    platform.apiClient.powerOn(deviceConfiguration.id);
                 } else {
-                    platform.apiClient.powerOffAsync(deviceConfiguration.id);
+                    platform.apiClient.powerOff(deviceConfiguration.id);
                 }
 
                 // Updates the current state characteristic
@@ -116,9 +116,9 @@ export class MoodoController {
 
                 // Sends the update to the device
                 if (newValue == 0) {
-                    platform.apiClient.powerOffAsync(deviceConfiguration.id);
+                    platform.apiClient.powerOff(deviceConfiguration.id);
                 } else {
-                    platform.apiClient.setIntensityAsync(deviceConfiguration.id, newValue);
+                    platform.apiClient.setIntensity(deviceConfiguration.id, newValue);
                 }
             } catch (e) {
                 platform.logger.warn(`[${deviceConfiguration.id}] failed to change device intensity to ${newValue}`);
@@ -186,7 +186,7 @@ export class MoodoController {
                             }
             
                             // Sends the update to the device
-                            platform.apiClient.updateAsync(this.getBoxUpdate(i, newValue ? (this.slotRotationSpeedCharacteristics![i].value || 100) : 0));
+                            platform.apiClient.update(this.getBoxUpdate(i, newValue ? (this.slotRotationSpeedCharacteristics![i].value || 100) : 0));
                         } else if (newValue) {
                             setTimeout(() => slotActiveCharacteristic.value = false, 1000);
                         }
@@ -230,7 +230,7 @@ export class MoodoController {
                             }
             
                             // Sends the update to the device
-                            platform.apiClient.updateAsync(this.getBoxUpdate(i, newValue));
+                            platform.apiClient.update(this.getBoxUpdate(i, newValue));
                             slotActiveCharacteristic.value = newValue > 0;
                         } else if (newValue > 0) {
                             setTimeout(() => slotRotationSpeedCharacteristic.value = 0, 1000);

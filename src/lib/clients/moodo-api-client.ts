@@ -52,6 +52,18 @@ export class MoodoApiClient {
     }
 
     /**
+     * Powers the box on, i.e. sets the box status to on. This method does not wait for the API to response.
+     * @param deviceKey The device key.
+     */
+    public async powerOn(deviceKey: number) {
+        try {
+            await this.powerOnAsync(deviceKey);
+        } catch (e) {
+            this.platform.logger.warn(`[${deviceKey}] Giving up. Error while powering box ON via API: ${e}`);
+        }
+    }
+
+    /**
      * Powers the box on, i.e. sets the box status to on.
      * @param deviceKey The device key.
      * @param retryCount The number of retries before reporting failure.
@@ -82,6 +94,18 @@ export class MoodoApiClient {
             } else {
                 throw e;
             }
+        }
+    }
+
+    /**
+     * Powers the box off, i.e. sets the box status to off. This method does not wait for the API to response.
+     * @param deviceKey The device key.
+     */
+    public async powerOff(deviceKey: number) {
+        try {
+            await this.powerOffAsync(deviceKey);
+        } catch (e) {
+            this.platform.logger.warn(`[${deviceKey}] Giving up. Error while powering box OFF via API: ${e}`);
         }
     }
 
@@ -120,7 +144,20 @@ export class MoodoApiClient {
     }
 
     /**
-     * Sets the main intensity of the box on.
+     * Sets the main intensity of the box. This method does not wait for the API to response.
+     * @param deviceKey The device key.
+     * @param intensity The new intensity (ranges from 0 to 100).
+     */
+    public async setIntensity(deviceKey: number, intensity: number) {
+        try {
+            await this.setIntensityAsync(deviceKey, intensity);
+        } catch (e) {
+            this.platform.logger.warn(`[${deviceKey}] Giving up. Error while setting intensity of box to ${intensity} via API: ${e}`);
+        }
+    }
+
+    /**
+     * Sets the main intensity of the box.
      * @param deviceKey The device key.
      * @param intensity The new intensity (ranges from 0 to 100).
      * @param retryCount The number of retries before reporting failure.
@@ -156,6 +193,19 @@ export class MoodoApiClient {
             }
         }
     }
+
+    /**
+     * Updates the box settings, i.e. sets the fan speeds for all slots. This method does not wait for the API to response.
+     * @param boxUpdate The new settings.
+     */
+    public async update(boxUpdate: BoxUpdate) {
+        try {
+            await this.updateAsync(boxUpdate);
+        } catch (e) {
+            this.platform.logger.warn(`[${boxUpdate.device_key}] Giving up. Error while updating box slot settings via API: ${e}`);
+        }
+    }
+
     /**
      * Updates the box settings, i.e. sets the fan speeds for all slots.
      * @param boxUpdate The new settings.
