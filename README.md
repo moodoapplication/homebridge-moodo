@@ -37,6 +37,7 @@ npm install -g homebridge-moodo
                     "type": "fan",
                     "showCapsules": false,
                     "useCapsuleNames": false,
+                    "showTimer": false,
                     "isSingleAccessoryModeEnabled": false
                 }
             ]
@@ -58,6 +59,8 @@ npm install -g homebridge-moodo
 **showCapsules** (optional): Determines whether controls for the individual capsules are exposed to HomeKit. Defaults to `false`.
 
 **useCapsuleNames** (optional): By default, the capsules are named "Capsule 1" to "Capsule 4". If this value is set to `true`, the actual capsule names (i.e. the fragrence names) are shown. (Only used if `showCapsules` is `true`)
+
+**showTimer** (optional): Determines whether a "timer" should be exposed to HomeKit. This is a switch with a duration characteristics. Changing the switch to ON starts the device and the timer for the specified duration (in seconds). When the timer elapses, the device is turned off. The duration characteristic is not supported in the Home app. Defaults to `false`.
 
 **isSingleAccessoryModeEnabled** (optional): By default, the capsules are placed in a separate accessory (works best in the Apple Home app). If this value is set to `true`, those controls are added to the main accessory instead of a separate accessory. (Only used if `showCapsules` is `true`)
 

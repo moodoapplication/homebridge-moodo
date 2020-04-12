@@ -30,6 +30,11 @@ export interface DeviceConfiguration {
     useCapsuleNames: boolean;
 
     /**
+     * Gets or sets a value that determines whether a delay timer is exposed to HomeKit.
+     */
+    showTimer: boolean;
+
+    /**
      * Gets or sets a value that determines whether controls for the individual capsules are added to the main accessory.
      */
     isSingleAccessoryModeEnabled: boolean;

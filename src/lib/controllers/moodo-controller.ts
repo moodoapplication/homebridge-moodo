@@ -242,7 +242,74 @@ export class MoodoController {
                 this.slotRotationSpeedCharacteristics.push(slotRotationSpeedCharacteristic);
             }
         }
+
+        // Creates the accessory for the timer
+        if (deviceConfiguration.showTimer) {
+
+            // Adds a new accessory if the single accessory mode is disabled
+            let timerAccessory: Accessory;
+            if (deviceConfiguration.isSingleAccessoryModeEnabled) {
+                timerAccessory = mainAccessory;
+            } else {
+                timerAccessory = platform.useAccessory(`${deviceConfiguration.name} Timer`, deviceConfiguration.id.toString(), 'timer');
+                timerAccessory.setInformation({
+                    manufacturer: 'Agan Aroma & Fine Chemicals Ltd.',
+                    model: 'Moodo',
+                    serialNumber: deviceConfiguration.id.toString(),
+                    firmwareRevision: null,
+                    hardwareRevision: null
+                });
+            }
+
+            // Creates the timer service for the device
+            platform.logger.info(`[${deviceConfiguration.id}] Adding timer`);
+            const timerService = timerAccessory.useService(Homebridge.Services.Switch, `Timer`, `timer-switch`);
+
+            // Adds the characteristics for the service
+            const timerOnCharacteristic = timerService.useCharacteristic<boolean>(Homebridge.Characteristics.On);
+            const timerDurationCharacteristic = timerService.useCharacteristic<number>(Homebridge.Characteristics.SetDuration);
+            timerOnCharacteristic.valueChanged = newValue => {
+                platform.logger.info(`[${deviceConfiguration.id}] Change timer status to ${newValue}, duration is ${timerDurationCharacteristic.value}`);
+                try {
+
+                    // Clears the old timer
+                    if (this.timerHandle) {
+                        clearTimeout(this.timerHandle);
+                        this.timerHandle = null;
+                    }
+
+                    // Checks if a new timer has to be set
+                    if (newValue) {
+
+                        // Checks if the timer switch from OFF to ON, which means the device has to be enabled
+                        if (timerOnCharacteristic.value !== newValue) {
+                            this.mainActiveCharacteristic.valueChanged!(true);
+                            this.mainActiveCharacteristic.value = true;
+                        }
+
+                        // Sets the timeout for the timer
+                        this.timerHandle = setTimeout(() => {
+                            platform.logger.info(`[${deviceConfiguration.id}] Timer elapsed`);
+                            
+                            // Switches the device off
+                            this.mainActiveCharacteristic.valueChanged!(false);
+                            this.mainActiveCharacteristic.value = false;
+
+                            // Sets the timer to off
+                            timerOnCharacteristic.value = false;
+                        }, (timerDurationCharacteristic.value || 10) * 1000);
+                    }
+                } catch (e) {
+                    platform.logger.warn(`[${deviceConfiguration.id}] failed to change timer status to ${newValue}`);
+                }
+            };
+        }
     }
+
+    /**
+     * Contains the handle for updating/resetting the timer.
+     */
+    private timerHandle: any = null;
 
     /**
      * Contains the active characteristic of the device.

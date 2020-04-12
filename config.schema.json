@@ -43,6 +43,10 @@
                             "type": "boolean",
                             "title": "Capsules Names in HomeKit"
                         },
+                        "showTimer": {
+                            "type": "boolean",
+                            "title": "Show Timer"
+                        },
                         "isSingleAccessoryModeEnabled": {
                             "type": "boolean",
                             "title": "Single Accessory Mode"
