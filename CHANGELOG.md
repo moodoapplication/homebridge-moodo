@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+## [2.0.6] - 2020-04-12
+### Changes
+- Enhanced removing all capsule services at once when the config.json changes.
+
 ## [2.0.5] - 2020-04-12
 ### Changes
 - Enhanced the communication with the live-update socket, so that accessory values are not jumping when making changes

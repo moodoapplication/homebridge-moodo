@@ -1,6 +1,6 @@
 {
   "name": "homebridge-moodo",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "author": "Vladislav Landa",
   "homepage": "https://github.com/moodoapplication/homebridge-moodo#readme",
   "description": "Homebridge plugin for Moodo - Smart Fragrance Diffuser",
@@ -22,7 +22,7 @@
     "@types/socket.io-client": "^1.4.32"
   },
   "dependencies": {
-    "homebridge-framework": "^1.0.5",
+    "homebridge-framework": "^1.0.6",
     "axios": "^0.19.2",
     "socket.io-client": "^2.3.0"
   },
