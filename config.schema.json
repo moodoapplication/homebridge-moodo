@@ -27,7 +27,7 @@
                             "placeholder": "Choose a name"
                         },
                         "type": {
-                            "type": "integer",
+                            "type": "string",
                             "title": "HomeKit Type",
                             "default": "fan",
                             "oneOf": [
